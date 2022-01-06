@@ -31,9 +31,14 @@ import numpy as np
 class CageOpt:
 
     def __init__(self):
-        self.u0 = 4*np.pi*10**-7  # permeability of free space
-        self.pi = np.pi           # pi cte = 3.14
-        self.gamma = 0.5445       # for a uniform vector field, this value should be 0.5445
+        self.u0 = 4*np.pi*10**-7  # permeability of free space [-]
+        self.pi = np.pi           # pi cte = 3.14 [-]
+        self.gamma = 0.5445       # for a uniform vector field, this value should be 0.5445 [-]
+        self.max_i = 20           # the maximum allowed current [A]
+        self.turns = 20           # the number of turn [-]
+        self.max_a = 1            # the maximum allowed size [m]
+        self.min_a = 1            # the minimum allowed size [m]
+        self.des_b = 0.00015      # the desired magnetic field value [Tesla]
 
     def opt_formulation(self):
         """ Define the list of variables and parameters """
@@ -53,21 +58,27 @@ class CageOpt:
         """ Declare the constraints """
         # create a blank constraint array
         con = []
-        # the minimal intensity at the center of the cage should be greater than 200 uT
-        con += [n*i*(4*u0)/(a*pi*(1+gamma**2)*cp.sqrt(2+gamma**2)) >= 0.00015]
-        # the maximum current [i] flowing through the coils should be smaller than 9.3 A
-        con += [i <= 20]
+        # the minimal intensity at the center of the cage should be greater than 150 uT
+        con += [n*i*(4*u0)/(a*pi*(1+gamma**2)*cp.sqrt(2+gamma**2)) >= self.des_b]
+        # the maximum current [i] flowing through the coils should be smaller than 20 A
+        # the maximum current value depends on your available power supply
+        # you also should check the wire current limits.
+        con += [i <= self.max_i]
         # the minimum number of turns [n] should be greater than 30
-        con += [n == 20]
-        # the half-length of the cage should be not be smaller than 1 m
-        con += [a == 1]
+        # the value n will impact on your total mass and budget.
+        con += [n == self.turns]
+        # the half-length of the cage [a] should be not be smaller than 1 m
+        # the minimum length of the cage should be at least double of your satellite size
+        # the maximum size will depend on your available free space.
+        con += [a <= self.max_a]
+        con += [a >= self.min_a]
         """ Formulate and solve the optimization problem """
         pro = cp.Problem(obj, con)
         pro.solve(gp=True)
         """ Print the obtained results """
-        print("Optimal value: ", pro.value)
-        print("Cage length: ", 2*a.value)
-        print("Cage current: ", i.value)
+        print("Optimal value: ", pro.value, " Tesla")
+        print("Cage length: ", 2*a.value, " meters")
+        print("Cage current: ", i.value, " A")
         print("Coil number of turns", n.value)
         return a.value, i.value, n.value
 
