@@ -1,3 +1,28 @@
+"""
+Written by B. S. Deng January 6th, 2022.
+
+It solves the problem of Helmholtz Cage design.
+The optimization problem is subject to the cage size, to the current, and the number of turns.
+
+maximize    Vector_Field
+s.t.        current
+            number of turns
+            Size of the coil
+
+where [i], [n], and [a] are the optimization variables.
+This problem can be easily solved via geometric programming.
+We use the equations presented on the following references:
+
+[1] E. Cayo, J. Pareja, P. E. R. Arapa, "Design and implementation of a geomagnetic field simulator for small satellites
+," Conference: III IAA Latin American Cubesat Workshop, Jan. 2019.
+[2] R. C. D. Silva, F. C. Guimaraes, J. V. L. D. Loiola, R. A. Borges, S. Battistini, and C. Cappelletti, "Tabletop
+testbed for attitude determination and control of nanosatellites," Journal of Aerospace Engineering, vol. 32, no. 1,
+2018.
+[3] J. Stevens, "CubeSAT ADCS Validation and Testing Apparatus," Western Michigan University, 2016
+[4] N. Theoret, "Attitude Determination Control Testing System," Western Michigan University, 2016
+"""
+
+# Import the required libraries
 import matplotlib.pyplot as plt
 import cvxpy as cp
 import numpy as np
@@ -6,50 +31,63 @@ import numpy as np
 class CageOpt:
 
     def __init__(self):
-        self.u0 = 4*np.pi*10**-7  # copper density [kg/m3]
-        self.pi = np.pi
-        self.gamma = 0.5445
+        self.u0 = 4*np.pi*10**-7  # permeability of free space
+        self.pi = np.pi           # pi cte = 3.14
+        self.gamma = 0.5445       # for a uniform vector field, this value should be 0.5445
 
     def opt_formulation(self):
-        # Define the list of variables and parameters
+        """ Define the list of variables and parameters """
+        # Variables and parameters must be positive, ie, they must be constructed with the option `pos=True`
+        # Decision Variables
         n = cp.Variable(pos=True)  # number of turns
-        i = cp.Variable(pos=True)  # current flowing the coil
-        a = cp.Variable(pos=True)  # half length of the cage
-        u0 = cp.Constant(self.u0)  # u0
+        i = cp.Variable(pos=True)  # current flowing through the coil
+        a = cp.Variable(pos=True)  # half-length of the cage
+        # Parameter values (both must be positive)
+        u0 = cp.Constant(self.u0)
         pi = cp.Constant(self.pi)
-        gamma = cp.Constant(self.gamma)  # ratio
-        # Declare objective function
-        objective = n*i*(a**-1)*(4*u0)/(pi*((1+gamma)**2)*cp.sqrt(2+gamma**2))
+        gamma = cp.Constant(self.gamma)
+        """ Declare the objective function """
+        # the objective function will be the intensity of the magnetic field at the center of the cage
+        objective = n*i*(4*u0)/(a*pi*(1+gamma**2)*cp.sqrt(2+gamma**2))
         obj = cp.Minimize(objective)
-        # Declare constraints
+        """ Declare the constraints """
+        # create a blank constraint array
         con = []
-        con += [n*i*(a**-1)*(4*u0)/(pi*((1+gamma)**2)*cp.sqrt(2+gamma**2)) >= 0.0002]
-        con += [i <= 9.3]
-        con += [n >= 30]
-        con += [a <= 1]
-        # Formulate and solve the optimization problem
+        # the minimal intensity at the center of the cage should be greater than 200 uT
+        con += [n*i*(4*u0)/(a*pi*(1+gamma**2)*cp.sqrt(2+gamma**2)) >= 0.00015]
+        # the maximum current [i] flowing through the coils should be smaller than 9.3 A
+        con += [i <= 20]
+        # the minimum number of turns [n] should be greater than 30
+        con += [n == 20]
+        # the half-length of the cage should be not be smaller than 1 m
+        con += [a == 1]
+        """ Formulate and solve the optimization problem """
         pro = cp.Problem(obj, con)
         pro.solve(gp=True)
+        """ Print the obtained results """
         print("Optimal value: ", pro.value)
         print("Cage length: ", 2*a.value)
         print("Cage current: ", i.value)
         print("Coil number of turns", n.value)
-        return pro
+        return a.value, i.value, n.value
 
 
+"""
 if __name__ == '__main__':
     # Estimates the magnetic dipole
     Cage = CageOpt()
-    Cage.opt_formulation()
-
+    a, i, n = Cage.opt_formulation()
 """
+
+
 class HelmCage:
-    def __init__(self):
-        self.n = 20
+
+    def __init__(self, n, i, a):
+        self.n = n
         self.u0 = 4*np.pi*10**-7
-        self.i = 8
-        self.l = 2
-        self.d = 2*0.5445
+        self.i = i
+        self.l = 2*a
+        self.d = 2*0.5445*a
 
     def ver_cond(self, x, y, z, y_pos, z_pos, i):
         l_dis, d_dis = 0.5*self.l, 0.5*self.d
@@ -138,6 +176,7 @@ class HelmCage:
 
 
 if __name__ == '__main__':
-    helm_cage = HelmCage()
+    Cage = CageOpt()
+    a, i, n = Cage.opt_formulation()
+    helm_cage = HelmCage(n, i, a)
     helm_cage.main()
-"""
