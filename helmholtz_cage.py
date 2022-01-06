@@ -72,6 +72,14 @@ class CageOpt:
         return a.value, i.value, n.value
 
 
+"""
+if __name__ == '__main__':
+    # Estimates the magnetic dipole
+    Cage = CageOpt()
+    a, i, n = Cage.opt_formulation()
+"""
+
+
 class HelmCage:
 
     def __init__(self, n, i, a):
@@ -165,7 +173,7 @@ class HelmCage:
         plt.colorbar()
         plt.clim(0, 0.0004)
         plt.show()
-
+        plt.savefig('cage.png')
 
 if __name__ == '__main__':
     Cage = CageOpt()
