@@ -1,18 +1,11 @@
-
-pip install -r requirements.txt /n
-python helmholtz_cage.py
-
 # Optimal Design of the Square Shaped Helmholtz-Cage
 
 ## Code
-To compute the optimal parameter values, just run these commands on your terminal \
+To compute the optimal parameter values, just run these commands on your terminal.
 ```
 pip install -r requirements.txt \
 python helmholtz_cage.py \
 ```
-
-The module includes a high-resolution ```QMC5883L``` magnetometer sensor.
-The ```I2C``` serial bus is through the two-wire ```I2C``` synchronous serial interface.
   
 ## Heading
 1. Features
@@ -32,3 +25,10 @@ The ```I2C``` serial bus is through the two-wire ```I2C``` synchronous serial in
 
 ## References
 
+[1] E. Cayo, J. Pareja, P. E. R. Arapa, "Design and implementation of a geomagnetic field simulator
+for small satellites ," Conference: III IAA Latin American Cubesat Workshop, Jan. 2019.
+[2] R. C. D. Silva, F. C. Guimaraes, J. V. L. D. Loiola, R. A. Borges, S. Battistini, and C.
+Cappelletti, "Tabletop testbed for attitude determination and control of nanosatellites," Journal
+of Aerospace Engineering, vol. 32, no. 1, 2018.
+[3] J. Stevens, "CubeSAT ADCS Validation and Testing Apparatus," Western Michigan University, 2016
+[4] N. Theoret, "Attitude Determination Control Testing System," Western Michigan University, 2016
