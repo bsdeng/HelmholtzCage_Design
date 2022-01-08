@@ -1,13 +1,10 @@
-# Optimal Design of the Square Shaped Helmholtz-Cage
+# Square Shaped Helmholtz-Cage Design
 
-## Heading
-1. Code
-2. Pin Function
-3. Upload Code
+## Contents
+- Features
+- References
 
-
-## 1 - Code
-To compute the optimal parameter values, just run these commands on your terminal.
+To install and compute the optimal parameter values, just run these commands on your terminal.
 ```
 pip install -r requirements.txt \
 python helmholtz_cage.py \
@@ -15,7 +12,7 @@ python helmholtz_cage.py \
 
 ## 2 - Features
 - This code performs the computation of the optimal parameter values of the Square shaped Helmholtz Cage.
-- This optimization problem can be easily solved through geometric programming (GP). The constraints of this problem are: (1) available space (2) the size of the spacecraft (3) upper limit of the power supply (4) number of turns.
+- This optimization problem can be easily solved through [geometric programming (GP)](https://github.com/cvxpy/cvxpy#installation). The constraints of this problem are: (1) available space (2) the size of the spacecraft (3) upper limit of the power supply (4) number of turns.
 - All these optimization variables may affect your helmholtz cage size, budget, and power consumption.
 
 ## 3 - Theory
