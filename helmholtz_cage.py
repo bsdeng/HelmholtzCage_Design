@@ -1,12 +1,4 @@
 """
-
-. /Users/bsdeng/opt/anaconda3/bin/activate && conda activate /Users/bsdeng/opt/anaconda3/envs/star_tracker;
-cd /Users/bsdeng/Desktop/code/helmholtz_cage
-pylint helmholtz_cage.py
-python helmholtz_cage.py
-
-Written by B. S. Deng January 6th, 2022.
-
 It solves the problem of Square-Shaped Helmholtz Cage design.
 The optimization problem is subject to the cage size, to the current, and the number of turns.
 
