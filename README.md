@@ -6,7 +6,7 @@
 
 To install and compute the optimal parameter values, just run these commands on your terminal.
 ```
-pip install -r requirements.txt \
+pip install -r requirements.txt
 python helmholtz_cage.py
 ```
 
